@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static Celeste.Mod.LoennScriptGenerator.LoennScripts.ElementMetadata;
 
 namespace Celeste.Mod.LoennScriptGenerator.LoennScripts;
 
@@ -55,7 +56,7 @@ public class EntityScriptMetadata
 
     private static readonly BindingFlags flags = BindingFlags.Public | BindingFlags.Static;
 
-    public EntityScriptMetadata(string name, LoennEntityConfig config)
+    private EntityScriptMetadata(string name, LoennEntityConfig config)
     {
         Name = name;
         Config = config;
@@ -69,7 +70,7 @@ public class EntityScriptMetadata
         var metadata = new EntityScriptMetadata(ToLowerCamelCase(type.Name), config);
 
         var fields = type.GetFields(flags).Where(f => f.IsDefined(typeof(PlacementsElementAttribute)));
-        foreach ( var field in fields ) 
+        foreach (var field in fields) 
         {
             var attributes = field.GetCustomAttributes().ToArray();
             var elementMetadata = CreateElementMetadata(field, attributes);
@@ -81,7 +82,62 @@ public class EntityScriptMetadata
 
     private static ElementMetadata CreateElementMetadata(FieldInfo field, Attribute[] attributes)
     {
-        return null!;
+        var elementType = GetElementType(field.FieldType);
+        var metadata = new ElementMetadata(ToLowerCamelCase(field.Name), elementType);
+        metadata.DefaultValue = field.GetValue(null);
+
+        SetFieldInfomation(metadata);
+        return metadata;
+
+        void SetFieldInfomation(ElementMetadata metadata, int depth = 0)
+        {
+            if (metadata.Type == ElementType.List)
+            {
+                foreach (var attribute in attributes)
+                {
+                    if (attribute is not ListElementAttrBase listAttr || listAttr.Depth != depth)
+                        continue;
+
+                    _ = listAttr switch
+                    {
+                        ListDefaultValueAttribute listDefAttr => metadata.ListDefaultValueIndex = listDefAttr.DefaultValueIndex,
+                        ListMinimumElementsAttribute listMinAttr => metadata.ListMinimumElements = listMinAttr.MinimumElements,
+                        ListMaximumElementsAttribute listMaxAttr => metadata.ListMaximumElements = listMaxAttr.MaximumElements,
+                        _ => null
+                    };
+                }
+
+                var innerType = field.FieldType.GetGenericArguments()[0];
+                metadata.ListElementsMetadata = new ElementMetadata("listInner", GetElementType(innerType));
+                SetFieldInfomation(metadata.ListElementsMetadata, depth + 1);
+            }
+
+            if (elementType == ElementType.Enum)
+                metadata.EnumOptions = Enum.GetNames(field.FieldType).ToList();
+
+            foreach (var attribute in attributes)
+            {
+                switch (attribute)
+                {
+                case DescriptionAttribute descAttr:
+                    metadata.Description = descAttr.Description;
+                    break;
+
+                // int/float
+                case MinimumValueAttribute minAttr:
+                    metadata.MinimumValue = minAttr.Value;
+                    break;
+                case MaximumValueAttribute maxAttr:
+                    metadata.MaximumValue = maxAttr.Value;
+                    break;
+
+                // enum
+                case EditableAttribute:
+                    metadata.Editable = true;
+                    break;
+                }
+            }
+        }
     }
 
     private static LoennEntityConfig CreateConfig(Type entityType, string customEntityName)
@@ -94,6 +150,18 @@ public class EntityScriptMetadata
         config.CustomEntityName = customEntityName;
         return config;
     }
+
+    private static ElementType GetElementType(Type type) => type switch
+    {
+        Type t when t == typeof(int) => ElementType.Int,
+        Type t when t == typeof(float) => ElementType.Float,
+        Type t when t == typeof(string) => ElementType.String,
+        Type t when t == typeof(bool) => ElementType.Bool,
+        Type t when t.IsEnum => ElementType.Enum,
+        Type t when t == typeof(Color) => ElementType.Color,
+        Type t when t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>) => ElementType.List,
+        _ => throw new NotSupportedException($"Field type '{type.FullName}' is not supported for element metadata.")
+    };
 
     private static string ToLowerCamelCase(string input)
     {
