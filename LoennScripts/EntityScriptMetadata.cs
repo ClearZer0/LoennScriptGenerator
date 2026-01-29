@@ -86,10 +86,10 @@ public class EntityScriptMetadata
         var metadata = new ElementMetadata(ToLowerCamelCase(field.Name), elementType);
         metadata.DefaultValue = field.GetValue(null);
 
-        SetFieldInfomation(metadata);
+        SetFieldInfomation(metadata, field.FieldType);
         return metadata;
 
-        void SetFieldInfomation(ElementMetadata metadata, int depth = 0)
+        void SetFieldInfomation(ElementMetadata metadata, Type currentType, int depth = 0)
         {
             if (metadata.Type == ElementType.List)
             {
@@ -109,7 +109,7 @@ public class EntityScriptMetadata
 
                 var innerType = field.FieldType.GetGenericArguments()[0];
                 metadata.ListElementsMetadata = new ElementMetadata("listInner", GetElementType(innerType));
-                SetFieldInfomation(metadata.ListElementsMetadata, depth + 1);
+                SetFieldInfomation(metadata.ListElementsMetadata, innerType, depth + 1);
             }
 
             if (elementType == ElementType.Enum)
@@ -117,25 +117,14 @@ public class EntityScriptMetadata
 
             foreach (var attribute in attributes)
             {
-                switch (attribute)
+                object _ = attribute switch
                 {
-                case DescriptionAttribute descAttr:
-                    metadata.Description = descAttr.Description;
-                    break;
-
-                // int/float
-                case MinimumValueAttribute minAttr:
-                    metadata.MinimumValue = minAttr.Value;
-                    break;
-                case MaximumValueAttribute maxAttr:
-                    metadata.MaximumValue = maxAttr.Value;
-                    break;
-
-                // enum
-                case EditableAttribute:
-                    metadata.Editable = true;
-                    break;
-                }
+                    DescriptionAttribute d => metadata.Description = d.Description,
+                    MinimumValueAttribute min => metadata.MinimumValue = min.Value,
+                    MaximumValueAttribute max => metadata.MaximumValue = max.Value,
+                    EditableAttribute => metadata.Editable = true,
+                    _ => 0
+                };
             }
         }
     }

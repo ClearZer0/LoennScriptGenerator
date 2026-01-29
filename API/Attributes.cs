@@ -18,7 +18,7 @@ public class PlacementsElementAttribute : Attribute
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
 public class DescriptionAttribute : Attribute
 {
-    public string Description { get; }
+    public readonly string Description;
     public DescriptionAttribute(string description) => Description = description;
 }
 #endregion
@@ -28,7 +28,7 @@ public class DescriptionAttribute : Attribute
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
 public class MinimumValueAttribute : Attribute
 {
-    public float Value { get; }
+    public readonly float Value;
     public MinimumValueAttribute(float value) => Value = value;
 }
 
@@ -36,7 +36,7 @@ public class MinimumValueAttribute : Attribute
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
 public class MaximumValueAttribute : Attribute
 {
-    public float Value { get; }
+    public readonly float Value;
     public MaximumValueAttribute(float value) => Value = value;
 }
 
@@ -48,25 +48,31 @@ public class EditableAttribute : Attribute
 
 // use for set default value for List<T> types
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-public class ListDefaultValueAttribute : Attribute
+public class ListDefaultValueAttribute : ListElementAttrBase
 {
-    public int DefaultValueIndex { get; }
-    public ListDefaultValueAttribute(int defaultValueIndex) => DefaultValueIndex = defaultValueIndex;
+    public readonly int DefaultValueIndex;
+    public ListDefaultValueAttribute(int defaultValueIndex, int depth = 0) : base(depth) => DefaultValueIndex = defaultValueIndex;
 }
 
 // use for set minimum elements for List<T> types
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-public class ListMinimumElementsAttribute : Attribute
+public class ListMinimumElementsAttribute : ListElementAttrBase
 {
-    public int MinimumElements { get; }
-    public ListMinimumElementsAttribute(int minimumElements) => MinimumElements = minimumElements;
+    public readonly int MinimumElements;
+    public ListMinimumElementsAttribute(int minimumElements, int depth = 0) : base(depth) => MinimumElements = minimumElements;
 }
 
 // use for set maximum elements for List<T> types
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-public class ListMaximumElementsAttribute : Attribute
+public class ListMaximumElementsAttribute : ListElementAttrBase
 {
-    public int MaximumElements { get; }
-    public ListMaximumElementsAttribute(int maximumElements) => MaximumElements = maximumElements;
+    public readonly int MaximumElements;
+    public ListMaximumElementsAttribute(int maximumElements, int depth = 0) : base(depth) => MaximumElements = maximumElements;
+}
+
+public abstract class ListElementAttrBase : Attribute
+{
+    public readonly int Depth;
+    public ListElementAttrBase(int depth) => Depth = depth;
 }
 #endregion
