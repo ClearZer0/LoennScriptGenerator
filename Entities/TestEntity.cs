@@ -11,6 +11,43 @@ namespace Celeste.Mod.LoennScriptGenerator.Entities;
 [CustomEntity("LoennScriptGenerator/Test")]
 public class TestEntity : Entity
 {
+    public enum TestEnum
+    {
+        FirstOption,
+        SecondOption,
+        ThirdOption
+    }
+
+    [MinimumValue(0)]
     [PlacementsElement]
-    public int Dash = 1;
+    public static int Dash = 1;
+
+    [MaximumValue(8126.81276186f)]
+    [PlacementsElement]
+    public static float Dash2 = 2.9f;
+
+    [PlacementsElement]
+    public static bool IsEnabled = true;
+
+    [Editable]
+    [PlacementsElement]
+    public static TestEnum MyEnum = TestEnum.SecondOption;
+
+    [UseAlpha]
+    [PlacementsElement]
+    public static Color Color = Color.Green * 0.5f;
+
+    [MaximumValue(81)]
+    [MinimumValue(0)]
+    [PlacementsElement]
+    [ListElementSeparator(";", depth: 0)]
+    [ListMinimumElements(1, depth: 0)]
+    [ListMaximumElements(5, depth: 0)]
+    [ListMinimumElements(3, depth: 1)]
+    [ListMaximumElements(9, depth: 1)]
+    public static List<List<int>> ListTest = new()
+    {
+        new(){ 1,2,3 },
+        new(){ 1986,80126859,1802608585} 
+    };
 }

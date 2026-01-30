@@ -35,8 +35,10 @@ public class ElementMetadata
     public bool Editable;
     public List<string>? EnumOptions;
 
+    public bool UseAlpha;
+
     public List<object>? ListElements;
-    public int? ListDefaultValueIndex;
+    public string? ListElementSeparator;
     public int? ListMinimumElements;
     public int? ListMaximumElements;
     public ElementMetadata? ListElementsMetadata;
@@ -83,11 +85,11 @@ public class EntityScriptMetadata
     private static ElementMetadata CreateElementMetadata(FieldInfo field, Attribute[] attributes)
     {
         var elementType = GetElementType(field.FieldType);
-        var metadata = new ElementMetadata(ToLowerCamelCase(field.Name), elementType);
-        metadata.DefaultValue = field.GetValue(null);
+        var rootMetadata = new ElementMetadata(ToLowerCamelCase(field.Name), elementType);
+        rootMetadata.DefaultValue = field.GetValue(null);
 
-        SetFieldInfomation(metadata, field.FieldType);
-        return metadata;
+        SetFieldInfomation(rootMetadata, field.FieldType);
+        return rootMetadata;
 
         void SetFieldInfomation(ElementMetadata metadata, Type currentType, int depth = 0)
         {
@@ -98,33 +100,36 @@ public class EntityScriptMetadata
                     if (attribute is not ListElementAttrBase listAttr || listAttr.Depth != depth)
                         continue;
 
-                    _ = listAttr switch
+                    object _ = listAttr switch
                     {
-                        ListDefaultValueAttribute listDefAttr => metadata.ListDefaultValueIndex = listDefAttr.DefaultValueIndex,
+                        ListElementSeparatorAttribute listSepAttr => metadata.ListElementSeparator = listSepAttr.Separator,
                         ListMinimumElementsAttribute listMinAttr => metadata.ListMinimumElements = listMinAttr.MinimumElements,
                         ListMaximumElementsAttribute listMaxAttr => metadata.ListMaximumElements = listMaxAttr.MaximumElements,
-                        _ => null
+                        _ => 0
                     };
                 }
 
-                var innerType = field.FieldType.GetGenericArguments()[0];
-                metadata.ListElementsMetadata = new ElementMetadata("listInner", GetElementType(innerType));
+                var innerType = currentType.GetGenericArguments()[0];
+                metadata.ListElementsMetadata = new ElementMetadata(metadata.Name, GetElementType(innerType));
                 SetFieldInfomation(metadata.ListElementsMetadata, innerType, depth + 1);
             }
-
-            if (elementType == ElementType.Enum)
-                metadata.EnumOptions = Enum.GetNames(field.FieldType).ToList();
-
-            foreach (var attribute in attributes)
+            else
             {
-                object _ = attribute switch
+                if (metadata.Type == ElementType.Enum)
+                    rootMetadata.EnumOptions = Enum.GetNames(currentType).ToList();
+
+                foreach (var attribute in attributes)
                 {
-                    DescriptionAttribute d => metadata.Description = d.Description,
-                    MinimumValueAttribute min => metadata.MinimumValue = min.Value,
-                    MaximumValueAttribute max => metadata.MaximumValue = max.Value,
-                    EditableAttribute => metadata.Editable = true,
-                    _ => 0
-                };
+                    object _ = attribute switch
+                    {
+                        DescriptionAttribute d => metadata.Description = d.Description,
+                        MinimumValueAttribute min => metadata.MinimumValue = min.Value,
+                        MaximumValueAttribute max => metadata.MaximumValue = max.Value,
+                        EditableAttribute => metadata.Editable = true,
+                        UseAlphaAttribute => metadata.UseAlpha = true,
+                        _ => 0
+                    };
+                }
             }
         }
     }

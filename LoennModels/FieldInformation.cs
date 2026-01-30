@@ -56,7 +56,11 @@ public static class FieldInformation
         if (element.Type == ElementType.Enum)
             elementTable["options"] = new LuaIdentifier(element.Name);
         if (element.Editable)
-            elementTable["editable"] = new LuaBoolean(true);
+            elementTable["editable"] = LuaBoolean.True;
+
+        // color
+        if (element.UseAlpha)
+            elementTable["useAlpha"] = LuaBoolean.True;
 
         // list
         // min/max elements
@@ -64,6 +68,9 @@ public static class FieldInformation
             elementTable["minimumElements"] = new LuaInt(listMin);
         if (element.ListMaximumElements is { } listMax)
             elementTable["maximumElements"] = new LuaInt(listMax);
+        // separator
+        if (element.ListElementSeparator is { } separator)
+            elementTable["elementSeparator"] = new LuaString(separator);
         // recursive gererate elementOptions
         if (element.ListElementsMetadata is { } listElementsMetadata)
             elementTable["elementOptions"] = CreateElement(listElementsMetadata);

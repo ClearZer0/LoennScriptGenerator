@@ -9,6 +9,9 @@ public sealed class LoennScriptGeneratorModule : EverestModule
 {
     public static LoennScriptGeneratorModule Instance { get; private set; }
 
+    // todo: fix enum and name display
+
+
     public override void Load()
     {
         Instance = this;
@@ -19,10 +22,22 @@ public sealed class LoennScriptGeneratorModule : EverestModule
         var script = LoennScriptGeneratorAPI.GenerateFor<TestEntity>();
 
         Logger.Info("LoennScriptGenerator", $"\n{script}");
-        script.Export(LoennScripts.ExportMode.GenerateNew);
+        script.Export(LoennScripts.ExportMode.ForceOverride);
     }
 
     public override void Unload()
     {
+    }
+}
+
+public static class Cmd
+{
+    [Command("lsg_test", "")]
+    public static void Test()
+    {
+        var script = LoennScriptGeneratorAPI.GenerateFor<TestEntity>();
+
+        Logger.Info("LoennScriptGenerator", $"\n{script}");
+        script.Export(LoennScripts.ExportMode.ForceOverride);
     }
 }

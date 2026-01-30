@@ -20,12 +20,14 @@ public class EntityScript : LoennScript
         // todo: auto generate options for enum
 
         // <moduleName>.Name = <[CustomEntity].Name>
-        var customEntityName = new LuaAssignment(LuaComposer.SimplePrefix(ModuleName, "Name"), metadata.Config.CustomEntityName);
+        var customEntityName = new LuaAssignment(LuaComposer.SimplePrefix(ModuleName, "name"), metadata.Config.CustomEntityName);
         customEntityName.IsLocal = false;
         Add(customEntityName);
 
         // placements
         Add(Placements.Create(metadata));
+        AddNewLine();
+
         // fieldInformation
         Add(FieldInformation.Create(metadata));
     }

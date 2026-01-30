@@ -36,6 +36,7 @@ public class LuaModule : LuaScript
 
         // local <moduleName> = {}
         Add(new LuaAssignment(ModuleName, new LuaArray()));
+        AddNewLine();
     }
 
     public void AddRequire(string varName, string modulePath) => requires.Add(new LuaAssignment(varName, new LuaFunctionCall("require", new LuaString(modulePath))));

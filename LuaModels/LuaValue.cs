@@ -61,6 +61,8 @@ public class LuaString : LuaValue
 public class LuaBoolean : LuaValue
 {
     private readonly bool value;
+    public static readonly LuaBoolean True = new LuaBoolean(true);
+    public static readonly LuaBoolean False = new LuaBoolean(false);
 
     public LuaBoolean(bool value) => this.value = value;
     public override string ToLua(int indentLevel = 0) => value.ToString().ToLowerInvariant();

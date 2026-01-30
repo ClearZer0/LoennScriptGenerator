@@ -46,16 +46,22 @@ public class EditableAttribute : Attribute
 {
 }
 
-// use for set default value for List<T> types
+// use for allow alpha value in color type
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-public class ListDefaultValueAttribute : ListElementAttrBase
+public class UseAlphaAttribute : Attribute
 {
-    public readonly int DefaultValueIndex;
-    public ListDefaultValueAttribute(int defaultValueIndex, int depth = 0) : base(depth) => DefaultValueIndex = defaultValueIndex;
+}
+
+// use for set separator for List<T> types
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
+public class ListElementSeparatorAttribute : ListElementAttrBase
+{
+    public readonly string Separator;
+    public ListElementSeparatorAttribute(string separator, int depth = 0) : base(depth) => Separator = separator;
 }
 
 // use for set minimum elements for List<T> types
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
 public class ListMinimumElementsAttribute : ListElementAttrBase
 {
     public readonly int MinimumElements;
@@ -63,7 +69,7 @@ public class ListMinimumElementsAttribute : ListElementAttrBase
 }
 
 // use for set maximum elements for List<T> types
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
 public class ListMaximumElementsAttribute : ListElementAttrBase
 {
     public readonly int MaximumElements;

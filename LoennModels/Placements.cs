@@ -1,11 +1,11 @@
 ﻿using Celeste.Mod.LoennScriptGenerator.LoennScripts;
 using Celeste.Mod.LoennScriptGenerator.LuaModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Celeste.Mod.LoennScriptGenerator.LoennScripts.ElementMetadata;
 
 namespace Celeste.Mod.LoennScriptGenerator.LoennModels;
 
@@ -38,16 +38,32 @@ public static class Placements
         return assignment;
     }
 
-    private static LuaValue ConvertValue(ElementMetadata metadata, object value) => metadata.Type switch
+    private static LuaValue ConvertValue(ElementMetadata metadata, object value, int depth = 0)
     {
-        ElementType.Int => new LuaInt(Convert.ToInt32(value)),
-        ElementType.Float => new LuaFloat(Convert.ToSingle(value)),
-        ElementType.Bool => new LuaBoolean((bool)value),
-        ElementType.List => ConvertValue(metadata.ListElementsMetadata!, value),
+        if (value is not IList list)
+            return ConvertAtom(metadata, value);
 
-        // string = "value"
-        // enum = "value" (generate from actual enum type)
-        // color = "value" (ffffff etc generate from default value)
-        _ => new LuaString((string)value)
-    };
+        // list
+        var separator = metadata.ListElementSeparator ?? ",";
+        var composer = new LuaComposer(separator);
+        foreach (var element in list.Cast<object>())
+        {
+            var result = ConvertValue(metadata.ListElementsMetadata!, element, depth + 1);
+            if (result is LuaString s)
+                result = s.ToIdentifier();
+            composer.Add(result);
+        }
+        //return depth == 0 ? new LuaString(composer.ToLua()) : composer;
+        return new LuaString(composer.ToLua());
+
+        static LuaValue ConvertAtom(ElementMetadata metadata, object value) => value switch
+        {
+            int => new LuaInt(Convert.ToInt32(value)),
+            float => new LuaFloat(Convert.ToSingle(value)),
+            bool => new LuaBoolean((bool)value),
+            Enum e => new LuaString(e.ToString()),
+            Color c => metadata.UseAlpha ? new LuaString($"{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}") : new LuaString($"{c.R:X2}{c.G:X2}{c.B:X2}"),
+            _ => new LuaString((string)value)
+        };
+    }
 }
