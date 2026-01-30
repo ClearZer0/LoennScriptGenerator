@@ -32,8 +32,9 @@ public class ElementMetadata
     public float? MinimumValue;
     public float? MaximumValue;
 
-    public bool Editable;
+    public string? EnumOptionsName;
     public List<string>? EnumOptions;
+    public bool Editable;
 
     public bool UseAlpha;
 
@@ -69,7 +70,7 @@ public class EntityScriptMetadata
         var type = typeof(TEntity);
         var customEntityAttr = type.GetCustomAttribute<CustomEntityAttribute>();
         var config = CreateConfig(type, customEntityAttr!.IDs[0]);
-        var metadata = new EntityScriptMetadata(ToLowerCamelCase(type.Name), config);
+        var metadata = new EntityScriptMetadata(LoennScriptGeneratorUtils.ToLowerCamelCase(type.Name), config);
 
         var fields = type.GetFields(flags).Where(f => f.IsDefined(typeof(PlacementsElementAttribute)));
         foreach (var field in fields) 
@@ -85,7 +86,7 @@ public class EntityScriptMetadata
     private static ElementMetadata CreateElementMetadata(FieldInfo field, Attribute[] attributes)
     {
         var elementType = GetElementType(field.FieldType);
-        var rootMetadata = new ElementMetadata(ToLowerCamelCase(field.Name), elementType);
+        var rootMetadata = new ElementMetadata(LoennScriptGeneratorUtils.ToLowerCamelCase(field.Name), elementType);
         rootMetadata.DefaultValue = field.GetValue(null);
 
         SetFieldInfomation(rootMetadata, field.FieldType);
@@ -116,7 +117,10 @@ public class EntityScriptMetadata
             else
             {
                 if (metadata.Type == ElementType.Enum)
+                {
+                    rootMetadata.EnumOptionsName = $"{LoennScriptGeneratorUtils.ToLowerCamelCase(currentType.Name)}Options";
                     rootMetadata.EnumOptions = Enum.GetNames(currentType).ToList();
+                }
 
                 foreach (var attribute in attributes)
                 {
@@ -156,11 +160,4 @@ public class EntityScriptMetadata
         Type t when t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>) => ElementType.List,
         _ => throw new NotSupportedException($"Field type '{type.FullName}' is not supported for element metadata.")
     };
-
-    private static string ToLowerCamelCase(string input)
-    {
-        if (string.IsNullOrEmpty(input) || char.IsLower(input[0]))
-            return input;
-        return char.ToLower(input[0]) + input.Substring(1);
-    }
 }

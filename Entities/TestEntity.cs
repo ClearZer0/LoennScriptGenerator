@@ -18,6 +18,13 @@ public class TestEntity : Entity
         ThirdOption
     }
 
+    public enum TestEnum2
+    {
+        FirstOption2,
+        SecondOption2,
+        ThirdOption2
+    }
+
     [MinimumValue(0)]
     [PlacementsElement]
     public static int Dash = 1;
@@ -31,7 +38,13 @@ public class TestEntity : Entity
 
     [Editable]
     [PlacementsElement]
-    public static TestEnum MyEnum = TestEnum.SecondOption;
+    public static TestEnum MyEnum0 = TestEnum.FirstOption;
+
+    [PlacementsElement]
+    public static TestEnum MyEnum1 = TestEnum.SecondOption;
+
+    [PlacementsElement]
+    public static TestEnum2 MyEnum2 = TestEnum2.ThirdOption2;
 
     [UseAlpha]
     [PlacementsElement]
@@ -48,6 +61,6 @@ public class TestEntity : Entity
     public static List<List<int>> ListTest = new()
     {
         new(){ 1,2,3 },
-        new(){ 1986,80126859,1802608585} 
+        new(){ 4,5,6,7} 
     };
 }

@@ -54,9 +54,10 @@ public static class FieldInformation
         // options for enum
         // enum table generate by EntityScript, so just reference it here
         if (element.Type == ElementType.Enum)
-            elementTable["options"] = new LuaIdentifier(element.Name);
-        if (element.Editable)
-            elementTable["editable"] = LuaBoolean.True;
+        {
+            elementTable["options"] = new LuaIdentifier(element.EnumOptionsName!);
+            elementTable["editable"] = element.Editable ? LuaBoolean.True : LuaBoolean.False;
+        }
 
         // color
         if (element.UseAlpha)

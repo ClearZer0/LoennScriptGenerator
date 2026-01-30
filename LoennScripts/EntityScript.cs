@@ -15,9 +15,10 @@ public class EntityScript : LoennScript
     public EntityScript(EntityScriptMetadata metadata)
         : base(metadata.Name)
     {
-        // tode: requires
+        // tode: auto load necessary requires
 
-        // todo: auto generate options for enum
+        // auto generate options for enum
+        GenerateOptions(metadata);
 
         // <moduleName>.Name = <[CustomEntity].Name>
         var customEntityName = new LuaAssignment(LuaComposer.SimplePrefix(ModuleName, "name"), metadata.Config.CustomEntityName);
@@ -30,5 +31,28 @@ public class EntityScript : LoennScript
 
         // fieldInformation
         Add(FieldInformation.Create(metadata));
+    }
+
+    private void GenerateOptions(EntityScriptMetadata metadata)
+    {
+        /*
+        <EnumOptionsName> = 
+        {
+            enum1 = "enum1",
+            enum2 = "enum2",
+            ...
+            enumN = "enumN"
+        }
+        */
+        foreach (var option in metadata.Elements.Where(m => m.EnumOptions != null).DistinctBy(m => m.EnumOptionsName))
+        {
+            var optionTable = new LuaTable();
+            var assignment = new LuaAssignment(option.EnumOptionsName!, optionTable);
+            foreach (var e in option.EnumOptions!)
+                optionTable[e] = LoennScriptGeneratorUtils.ToLowerCamelCase(e);
+
+            Add(assignment);
+            AddNewLine();
+        }
     }
 }

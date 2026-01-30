@@ -27,7 +27,7 @@ public abstract class LoennScript : LuaModule
 
     public void Export(ExportMode mode)
     {
-        string fullPath = Path.Combine(DirectoryPath, ExportPath, $"{ModuleName}.lua");
+        string fullPath = Path.Combine(DirectoryPath, ExportPath, $"{LoennScriptGeneratorUtils.ToUpperCamelCase(ModuleName)}.lua");
         var directory = Path.GetDirectoryName(fullPath);
         if (!string.IsNullOrEmpty(directory))
             Directory.CreateDirectory(directory);
