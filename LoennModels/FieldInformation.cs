@@ -73,7 +73,7 @@ public static class FieldInformation
         if (element.ListElementSeparator is { } separator)
             elementTable["elementSeparator"] = new LuaString(separator);
         // recursive gererate elementOptions
-        if (element.ListElementsMetadata is { } listElementsMetadata)
+        if (element.ListElementMetadata is { } listElementsMetadata)
             elementTable["elementOptions"] = CreateElement(listElementsMetadata);
 
         return elementTable;

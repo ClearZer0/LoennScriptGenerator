@@ -13,6 +13,7 @@ public class TestEntity : Entity
 {
     public enum TestEnum
     {
+        [Description("First Option = 1")]
         FirstOption,
         SecondOption,
         ThirdOption
@@ -23,6 +24,13 @@ public class TestEntity : Entity
         FirstOption2,
         SecondOption2,
         ThirdOption2
+    }
+
+    public static LoennEntityConfig GetConfig()
+    {
+        var config = new LoennEntityConfig();
+        config.How();
+        return config;
     }
 
     [MinimumValue(0)]
@@ -46,6 +54,12 @@ public class TestEntity : Entity
     [PlacementsElement]
     public static TestEnum2 MyEnum2 = TestEnum2.ThirdOption2;
 
+    [LinkEnumName<TestEnum>]
+    public static List<string> EnumLinkTest = new()
+    {
+
+    };
+
     [UseAlpha]
     [PlacementsElement]
     public static Color Color = Color.Green * 0.5f;
@@ -63,4 +77,23 @@ public class TestEntity : Entity
         new(){ 1,2,3 },
         new(){ 4,5,6,7} 
     };
+
+    public TestEntity(EntityData data, Vector2 offset)
+        : base(data.Position + offset)
+    {
+        Collider = new Hitbox(16f, 16f, 0f, 0f);
+
+        Logger.Info("", data.Attr("myEnum0"));
+        Logger.Info("", data.Enum<TestEnum>("myEnum0").ToString());
+        Logger.Info("", data.Attr("myEnum1"));
+        Logger.Info("", data.Enum<TestEnum>("myEnum1").ToString());
+    }
+
+    public override void Render()
+    {
+        base.Render();
+        var c = Color.LightBlue;
+        Draw.Rect(Collider, c * 0.5f);
+        Draw.HollowRect(Collider, c);
+    }
 }

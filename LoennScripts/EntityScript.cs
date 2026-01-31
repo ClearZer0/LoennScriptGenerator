@@ -48,11 +48,26 @@ public class EntityScript : LoennScript
         {
             var optionTable = new LuaTable();
             var assignment = new LuaAssignment(option.EnumOptionsName!, optionTable);
-            foreach (var e in option.EnumOptions!)
-                optionTable[e] = LoennScriptGeneratorUtils.ToLowerCamelCase(e);
+            for (int i = 0; i < option.EnumOptions!.Count; i++)
+                optionTable[option.EnumOptionDisplayNames![i]] = LoennScriptGeneratorUtils.LowerCamelCase(option.EnumOptions![i]);
 
             Add(assignment);
             AddNewLine();
+        }
+    }
+
+    private void ExportLang(EntityScriptMetadata metadata)
+    {
+        string fullPath = Path.Combine(DirectoryPath, "Loenn/lang", "en_gb.lang");
+        var directory = Path.GetDirectoryName(fullPath);
+        if (!string.IsNullOrEmpty(directory))
+            Directory.CreateDirectory(directory);
+
+        // wip
+        if (File.Exists(fullPath))
+        {
+            // entities.<[CustomEntity].Name>.placements.name.<[CustomEntity].Name>=<Description>
+            // entities.<[CustomEntity].Name>.attributes.description.<element.Name>=<Description>
         }
     }
 }

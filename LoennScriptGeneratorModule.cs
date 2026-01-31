@@ -9,20 +9,15 @@ public sealed class LoennScriptGeneratorModule : EverestModule
 {
     public static LoennScriptGeneratorModule Instance { get; private set; }
 
-    // todo: fix enum and name display
-
-
     public override void Load()
     {
         Instance = this;
-        var path = Metadata.PathDirectory;
-        Logger.Info("LoennScriptGenerator", $"LoennScriptGeneratorModule loaded from {path}");
 
         LoennScriptGeneratorAPI.Load(Metadata);
         var script = LoennScriptGeneratorAPI.GenerateFor<TestEntity>();
 
         Logger.Info("LoennScriptGenerator", $"\n{script}");
-        script.Export(LoennScripts.ExportMode.ForceOverride);
+        script.Export(LoennScripts.ExportMode.SkipIfExists);
     }
 
     public override void Unload()

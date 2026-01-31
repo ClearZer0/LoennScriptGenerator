@@ -33,16 +33,16 @@ public class ElementMetadata
     public float? MaximumValue;
 
     public string? EnumOptionsName;
+    public List<string>? EnumOptionDisplayNames;
     public List<string>? EnumOptions;
     public bool Editable;
 
     public bool UseAlpha;
 
-    public List<object>? ListElements;
     public string? ListElementSeparator;
     public int? ListMinimumElements;
     public int? ListMaximumElements;
-    public ElementMetadata? ListElementsMetadata;
+    public ElementMetadata? ListElementMetadata;
 
     public ElementMetadata(string name, ElementType type)
     {
@@ -53,6 +53,7 @@ public class ElementMetadata
 
 public class EntityScriptMetadata
 {
+    public string ClassName;
     public string Name;
     public List<ElementMetadata> Elements = new();
     public LoennEntityConfig Config;
@@ -61,7 +62,8 @@ public class EntityScriptMetadata
 
     private EntityScriptMetadata(string name, LoennEntityConfig config)
     {
-        Name = name;
+        ClassName = name;
+        Name = LoennScriptGeneratorUtils.LowerCamelCase(name);
         Config = config;
     }
 
@@ -69,13 +71,13 @@ public class EntityScriptMetadata
     {
         var type = typeof(TEntity);
         var customEntityAttr = type.GetCustomAttribute<CustomEntityAttribute>();
-        var config = CreateConfig(type, customEntityAttr!.IDs[0]);
-        var metadata = new EntityScriptMetadata(LoennScriptGeneratorUtils.ToLowerCamelCase(type.Name), config);
+        var fields = type.GetFields(flags);
+        var config = CreateConfig(fields, customEntityAttr!.IDs[0]);
+        var metadata = new EntityScriptMetadata(type.Name, config);
 
-        var fields = type.GetFields(flags).Where(f => f.IsDefined(typeof(PlacementsElementAttribute)));
-        foreach (var field in fields) 
+        foreach (var field in fields.Where(f => f.IsDefined(typeof(PlacementsElementAttribute)))) 
         {
-            var attributes = field.GetCustomAttributes().ToArray();
+            var attributes = field.GetCustomAttributes();
             var elementMetadata = CreateElementMetadata(field, attributes);
             metadata.Elements.Add(elementMetadata);
         }
@@ -83,10 +85,10 @@ public class EntityScriptMetadata
         return metadata;
     }
 
-    private static ElementMetadata CreateElementMetadata(FieldInfo field, Attribute[] attributes)
+    private static ElementMetadata CreateElementMetadata(FieldInfo field, IEnumerable<Attribute> attributes)
     {
         var elementType = GetElementType(field.FieldType);
-        var rootMetadata = new ElementMetadata(LoennScriptGeneratorUtils.ToLowerCamelCase(field.Name), elementType);
+        var rootMetadata = new ElementMetadata(LoennScriptGeneratorUtils.LowerCamelCase(field.Name), elementType);
         rootMetadata.DefaultValue = field.GetValue(null);
 
         SetFieldInfomation(rootMetadata, field.FieldType);
@@ -94,10 +96,12 @@ public class EntityScriptMetadata
 
         void SetFieldInfomation(ElementMetadata metadata, Type currentType, int depth = 0)
         {
+            // list
             if (metadata.Type == ElementType.List)
             {
                 foreach (var attribute in attributes)
                 {
+                    // check nested depth
                     if (attribute is not ListElementAttrBase listAttr || listAttr.Depth != depth)
                         continue;
 
@@ -110,16 +114,26 @@ public class EntityScriptMetadata
                     };
                 }
 
+                // recursive set list element's metadata
                 var innerType = currentType.GetGenericArguments()[0];
-                metadata.ListElementsMetadata = new ElementMetadata(metadata.Name, GetElementType(innerType));
-                SetFieldInfomation(metadata.ListElementsMetadata, innerType, depth + 1);
+                metadata.ListElementMetadata = new ElementMetadata(metadata.Name, GetElementType(innerType));
+                SetFieldInfomation(metadata.ListElementMetadata, innerType, depth + 1);
             }
             else
             {
                 if (metadata.Type == ElementType.Enum)
                 {
-                    rootMetadata.EnumOptionsName = $"{LoennScriptGeneratorUtils.ToLowerCamelCase(currentType.Name)}Options";
+                    rootMetadata.EnumOptionsName = $"{LoennScriptGeneratorUtils.LowerCamelCase(currentType.Name)}Options";
                     rootMetadata.EnumOptions = Enum.GetNames(currentType).ToList();
+                    rootMetadata.EnumOptionDisplayNames = new();
+
+                    var enumFields = field.FieldType.GetFields(flags);
+                    foreach (var field in enumFields)
+                    {
+                        var descAttr = field.GetCustomAttribute<DescriptionAttribute>();
+                        var displayName = descAttr != null ? $"[\"{descAttr.Description}\"]" : field.Name;
+                        rootMetadata.EnumOptionDisplayNames!.Add(displayName);
+                    }
                 }
 
                 foreach (var attribute in attributes)
@@ -138,9 +152,9 @@ public class EntityScriptMetadata
         }
     }
 
-    private static LoennEntityConfig CreateConfig(Type entityType, string customEntityName)
+    private static LoennEntityConfig CreateConfig(IEnumerable<FieldInfo> fields, string customEntityName)
     {
-        var configField = entityType.GetFields(flags).FirstOrDefault(f => f.FieldType == typeof(LoennEntityConfig));
+        var configField = fields.FirstOrDefault(f => f.FieldType == typeof(LoennEntityConfig));
         if (configField == null)
             return new LoennEntityConfig { CustomEntityName = customEntityName };
 

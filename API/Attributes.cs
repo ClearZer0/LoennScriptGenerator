@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Celeste.Mod.LoennScriptGenerator.API;
 
+public class LinkEnumNameAttribute<T> : Attribute where T : Enum
+{
+}
+
 #region Placements
 // use for decorating placement elements
 // supprots int, float. string, bool, enum, Color, List<T> (where T is one of the supported types)
@@ -14,7 +18,7 @@ public class PlacementsElementAttribute : Attribute
 {
 }
 
-// set element's tooltip description
+// set element's tooltip description or option display name
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
 public class DescriptionAttribute : Attribute
 {

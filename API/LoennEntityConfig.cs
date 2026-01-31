@@ -10,4 +10,6 @@ public class LoennEntityConfig
 {
     // reflection from CustomEntityAttribute.Name
     public string CustomEntityName = string.Empty;
+
+    public void How() { }
 }

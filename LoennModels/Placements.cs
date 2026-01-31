@@ -48,7 +48,7 @@ public static class Placements
         var composer = new LuaComposer(separator);
         foreach (var element in list.Cast<object>())
         {
-            var result = ConvertValue(metadata.ListElementsMetadata!, element);
+            var result = ConvertValue(metadata.ListElementMetadata!, element);
             if (result is LuaString s)
                 result = s.ToIdentifier();
             composer.Add(result);
@@ -60,7 +60,7 @@ public static class Placements
             int => new LuaInt(Convert.ToInt32(value)),
             float => new LuaFloat(Convert.ToSingle(value)),
             bool => new LuaBoolean((bool)value),
-            Enum e => new LuaString(LoennScriptGeneratorUtils.ToLowerCamelCase(e.ToString())),
+            Enum e => new LuaString(LoennScriptGeneratorUtils.LowerCamelCase(e.ToString())),
             Color c => metadata.UseAlpha ? new LuaString($"{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}") : new LuaString($"{c.R:X2}{c.G:X2}{c.B:X2}"),
             _ => new LuaString((string)value)
         };
