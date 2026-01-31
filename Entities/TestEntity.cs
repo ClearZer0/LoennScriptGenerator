@@ -37,6 +37,7 @@ public class TestEntity : Entity
     [PlacementsElement]
     public static int Dash = 1;
 
+    [Description("iyoiasydotouqw 8608508")]
     [MaximumValue(8126.81276186f)]
     [PlacementsElement]
     public static float Dash2 = 2.9f;
@@ -44,6 +45,7 @@ public class TestEntity : Entity
     [PlacementsElement]
     public static bool IsEnabled = true;
 
+    [Description("81256085hklhiasdgtotasoit")]
     [Editable]
     [PlacementsElement]
     public static TestEnum MyEnum0 = TestEnum.FirstOption;
@@ -53,12 +55,6 @@ public class TestEntity : Entity
 
     [PlacementsElement]
     public static TestEnum2 MyEnum2 = TestEnum2.ThirdOption2;
-
-    [LinkEnumName<TestEnum>]
-    public static List<string> EnumLinkTest = new()
-    {
-
-    };
 
     [UseAlpha]
     [PlacementsElement]

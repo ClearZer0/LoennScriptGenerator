@@ -11,10 +11,13 @@ namespace Celeste.Mod.LoennScriptGenerator.LoennScripts;
 public class EntityScript : LoennScript
 {
     protected override string ExportPath => "Loenn/entities";
+    private EntityScriptMetadata metadata;
 
     public EntityScript(EntityScriptMetadata metadata)
         : base(metadata.Name)
     {
+        this.metadata = metadata;
+
         // tode: auto load necessary requires
 
         // auto generate options for enum
@@ -31,6 +34,12 @@ public class EntityScript : LoennScript
 
         // fieldInformation
         Add(FieldInformation.Create(metadata));
+    }
+
+    public override void Export(ExportMode mode)
+    {
+        base.Export(mode);
+        ExportLang(metadata);
     }
 
     private void GenerateOptions(EntityScriptMetadata metadata)
@@ -63,11 +72,54 @@ public class EntityScript : LoennScript
         if (!string.IsNullOrEmpty(directory))
             Directory.CreateDirectory(directory);
 
-        // wip
-        if (File.Exists(fullPath))
+        var localizations = new List<string>();
+        var customEntityName = metadata.Config.CustomEntityName;
+        var entityClassName = LoennScriptGeneratorUtils.SplitCamelCase(metadata.ClassName);
+        var sectionHeader = $"# {LoennScriptGeneratorUtils.SplitCamelCase(entityClassName)}";
+
+        /*
+        # <[CustomEntity].Name>
+
+        localizations
+
+        # othetEntityName
+        */
+        localizations.Add(sectionHeader);
+        localizations.Add(string.Empty);
+        // entities.<[CustomEntity].Name>.placements.name.<moduleName>=<Description>
+        localizations.Add($"entities.{customEntityName}.placements.name.{ModuleName}={entityClassName}");
+        // entities.<[CustomEntity].Name>.attributes.description.<element.Name>=<Description>
+        var attrDescs = metadata.Elements.Where(e => e.Description != string.Empty).Select(e => $"entities.{customEntityName}.attributes.description.{e.Name}={e.Description}");
+        localizations.AddRange(attrDescs);
+        localizations.Add(string.Empty);
+
+        var fileLines = File.Exists(fullPath) ? File.ReadAllLines(fullPath).ToList() : new List<string>();
+        int startIndex = fileLines.FindIndex(l => l.Trim() == sectionHeader);
+
+        // found
+        if (startIndex != -1)
         {
-            // entities.<[CustomEntity].Name>.placements.name.<[CustomEntity].Name>=<Description>
-            // entities.<[CustomEntity].Name>.attributes.description.<element.Name>=<Description>
+            // search # othetEntityName or EOF
+            int endIndex = -1;
+            if (startIndex + 1 < fileLines.Count)
+                endIndex = fileLines.FindIndex(startIndex + 1, l => l.Trim().StartsWith("#"));
+            if (endIndex == -1)
+                endIndex = fileLines.Count;
+
+            // replace section
+            fileLines.RemoveRange(startIndex, endIndex - startIndex);
+            fileLines.InsertRange(startIndex, localizations);
         }
+        // not found
+        else
+        {
+            if (fileLines.Count > 0 && !string.IsNullOrWhiteSpace(fileLines.Last()))
+                fileLines.Add(string.Empty);
+
+            // append to last of lang
+            fileLines.AddRange(localizations);
+        }
+
+        File.WriteAllLines(fullPath, fileLines, new UTF8Encoding(false));
     }
 }
