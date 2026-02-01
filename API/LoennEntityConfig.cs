@@ -8,8 +8,10 @@ namespace Celeste.Mod.LoennScriptGenerator.API;
 
 public class LoennEntityConfig
 {
-    // reflection from CustomEntityAttribute.Name
-    public string CustomEntityName = string.Empty;
+    // reflection from CustomEntityAttribute.ID[0]
+    public string __CustomEntityName = string.Empty;
 
-    public void How() { }
+/*    public LoennTexture AddTexture() { }
+
+    public SpriteFunctionMetadata GetSpriteMetadata() { }*/
 }

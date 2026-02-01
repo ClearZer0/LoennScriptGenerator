@@ -25,6 +25,7 @@ public class ElementMetadata
 
     public string Name;
     public string Description = string.Empty;
+    public int? FieldOrder;
 
     public ElementType Type;
     public object? DefaultValue;
@@ -38,6 +39,7 @@ public class ElementMetadata
     public bool Editable;
 
     public bool UseAlpha;
+    public bool AllowEmpty;
 
     public string? ListElementSeparator;
     public int? ListMinimumElements;
@@ -140,11 +142,13 @@ public class EntityScriptMetadata
                 {
                     object _ = attribute switch
                     {
+                        FieldOrderAttribute order => metadata.FieldOrder = order.Order,
                         DescriptionAttribute d => metadata.Description = d.Description,
                         MinimumValueAttribute min => metadata.MinimumValue = min.Value,
                         MaximumValueAttribute max => metadata.MaximumValue = max.Value,
                         EditableAttribute => metadata.Editable = true,
                         UseAlphaAttribute => metadata.UseAlpha = true,
+                        AllowEmptyAttribute => metadata.AllowEmpty = true,
                         _ => 0
                     };
                 }
@@ -156,10 +160,10 @@ public class EntityScriptMetadata
     {
         var configField = fields.FirstOrDefault(f => f.FieldType == typeof(LoennEntityConfig));
         if (configField == null)
-            return new LoennEntityConfig { CustomEntityName = customEntityName };
+            return new LoennEntityConfig { __CustomEntityName = customEntityName };
 
         var config = (LoennEntityConfig)configField.GetValue(null)!;
-        config.CustomEntityName = customEntityName;
+        config.__CustomEntityName = customEntityName;
         return config;
     }
 

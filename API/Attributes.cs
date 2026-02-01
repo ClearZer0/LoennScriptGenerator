@@ -21,6 +21,14 @@ public class DescriptionAttribute : Attribute
     public readonly string Description;
     public DescriptionAttribute(string description) => Description = description;
 }
+
+// set display order for elements in placememnts
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+public class FieldOrderAttribute : Attribute
+{
+    public readonly int Order;
+    public FieldOrderAttribute(int order) => Order = order;
+}
 #endregion
 
 #region FieldInfomation
@@ -49,6 +57,11 @@ public class EditableAttribute : Attribute
 // use for allow alpha value in color type
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
 public class UseAlphaAttribute : Attribute
+{
+}
+
+// use for color type allow empty
+public class AllowEmptyAttribute : Attribute
 {
 }
 

@@ -24,7 +24,7 @@ public class EntityScript : LoennScript
         GenerateOptions(metadata);
 
         // <moduleName>.Name = <[CustomEntity].Name>
-        var customEntityName = new LuaAssignment(LuaComposer.SimplePrefix(ModuleName, "name"), metadata.Config.CustomEntityName);
+        var customEntityName = new LuaAssignment(LuaComposer.SimplePrefix(ModuleName, "name"), metadata.Config.__CustomEntityName);
         customEntityName.IsLocal = false;
         Add(customEntityName);
 
@@ -34,12 +34,20 @@ public class EntityScript : LoennScript
 
         // fieldInformation
         Add(FieldInformation.Create(metadata));
+        AddNewLine();
+
+        // fieldOrder
+        Add(FieldOrder.Create(metadata));
     }
 
     public override void Export(ExportMode mode)
     {
         base.Export(mode);
-        ExportLang(metadata);
+
+        // wip
+        // support ExportMode(?
+
+        // ExportLang(metadata);
     }
 
     private void GenerateOptions(EntityScriptMetadata metadata)
@@ -73,7 +81,7 @@ public class EntityScript : LoennScript
             Directory.CreateDirectory(directory);
 
         var localizations = new List<string>();
-        var customEntityName = metadata.Config.CustomEntityName;
+        var customEntityName = metadata.Config.__CustomEntityName;
         var entityClassName = LoennScriptGeneratorUtils.SplitCamelCase(metadata.ClassName);
         var sectionHeader = $"# {LoennScriptGeneratorUtils.SplitCamelCase(entityClassName)}";
 

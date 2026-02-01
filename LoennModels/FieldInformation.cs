@@ -62,6 +62,8 @@ public static class FieldInformation
         // color
         if (element.UseAlpha)
             elementTable["useAlpha"] = LuaBoolean.True;
+        if (element.AllowEmpty)
+            elementTable["allowEmpty"] = LuaBoolean.True;
 
         // list
         // min/max elements

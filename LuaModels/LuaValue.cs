@@ -70,19 +70,39 @@ public class LuaBoolean : LuaValue
 
 public class LuaArray : LuaValue
 {
-    private readonly List<LuaValue> elements = new();
-    public bool IsEmpty => elements.Count == 0;
+    private readonly List<LuaValue> values = new();
+    public bool IsEmpty => values.Count == 0;
+    public bool Flatten = true;
 
-    public void AddElement(LuaValue value) => elements.Add(value);
+    public void Add(LuaValue value) => values.Add(value);
+    public void Add(IEnumerable<LuaValue> values) => this.values.AddRange(values);
+    public void Add(params LuaValue[] values) => this.values.AddRange(values);
 
-    // { value1, value2, ..., valuen }
     public override string ToLua(int indentLevel = 0)
     {
-        if (elements.Count == 0) 
-            return "{}";
+        // { value1, value2, ..., valuen }
+        if (Flatten)
+        {
+            if (values.Count == 0)
+                return "{}";
 
-        var items = elements.Select(e => e.ToLua());
-        return $"{{ {string.Join(", ", items)} }}";
+            var items = values.Select(e => e.ToLua());
+            return $"{{ {string.Join(", ", items)} }}";
+        }
+
+        /*
+        {
+            value1,
+            value2,
+            ...
+            valueN
+        }
+        */
+        string outerIndent = GetIndent(indentLevel);
+        string innerIndent = GetIndent(indentLevel + 1);
+        var valueLines = values.Select(v => $"{innerIndent}{v.ToLua()}");
+
+        return $"\n{outerIndent}{{\n{string.Join(",\n", valueLines)}\n{outerIndent}}}";
     }
 }
 

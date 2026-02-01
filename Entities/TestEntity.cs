@@ -26,17 +26,12 @@ public class TestEntity : Entity
         ThirdOption2
     }
 
-    public static LoennEntityConfig GetConfig()
-    {
-        var config = new LoennEntityConfig();
-        config.How();
-        return config;
-    }
-
+    [FieldOrder(0)]
     [MinimumValue(0)]
     [PlacementsElement]
     public static int Dash = 1;
 
+    [FieldOrder(1)]
     [Description("iyoiasydotouqw 8608508")]
     [MaximumValue(8126.81276186f)]
     [PlacementsElement]
@@ -45,17 +40,21 @@ public class TestEntity : Entity
     [PlacementsElement]
     public static bool IsEnabled = true;
 
+    [FieldOrder(5)]
     [Description("81256085hklhiasdgtotasoit")]
     [Editable]
     [PlacementsElement]
     public static TestEnum MyEnum0 = TestEnum.FirstOption;
 
+    [FieldOrder(4)]
     [PlacementsElement]
     public static TestEnum MyEnum1 = TestEnum.SecondOption;
 
+    [FieldOrder(3)]
     [PlacementsElement]
     public static TestEnum2 MyEnum2 = TestEnum2.ThirdOption2;
 
+    [AllowEmpty]
     [UseAlpha]
     [PlacementsElement]
     public static Color Color = Color.Green * 0.5f;
