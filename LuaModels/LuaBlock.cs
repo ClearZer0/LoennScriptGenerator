@@ -23,7 +23,6 @@ public class LuaBlock : LuaElement
     public void AddLines(IEnumerable<LuaElement> lines) => Body.AddRange(lines);
     public void AddLines(params LuaElement[] lines) => Body.AddRange(lines);
 
-
     public override string ToLua(int indentLevel = 0)
     {
         // <header> <bodyLine1> <bodyLine2> ... <bodyLineN> <footer>

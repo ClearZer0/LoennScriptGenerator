@@ -6,9 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static Celeste.Mod.LoennScriptGenerator.LoennScripts.ElementMetadata;
+using static Celeste.Mod.LoennScriptGenerator.Metadatas.ElementMetadata;
 
-namespace Celeste.Mod.LoennScriptGenerator.LoennScripts;
+namespace Celeste.Mod.LoennScriptGenerator.Metadatas;
 
 public class ElementMetadata
 {
@@ -55,6 +55,9 @@ public class ElementMetadata
 
 public class EntityScriptMetadata
 {
+    // reflection from CustomEntityAttribute.ID[0]
+    public string CustomEntityName = string.Empty;
+
     public string ClassName;
     public string Name;
     public List<ElementMetadata> Elements = new();
@@ -62,10 +65,11 @@ public class EntityScriptMetadata
 
     private static readonly BindingFlags flags = BindingFlags.Public | BindingFlags.Static;
 
-    private EntityScriptMetadata(string name, LoennEntityConfig config)
+    private EntityScriptMetadata(string customEntityName, string className, LoennEntityConfig config)
     {
-        ClassName = name;
-        Name = LoennScriptGeneratorUtils.LowerCamelCase(name);
+        CustomEntityName = customEntityName;
+        ClassName = className;
+        Name = LoennScriptGeneratorUtils.LowerCamelCase(className);
         Config = config;
     }
 
@@ -74,8 +78,11 @@ public class EntityScriptMetadata
         var type = typeof(TEntity);
         var customEntityAttr = type.GetCustomAttribute<CustomEntityAttribute>();
         var fields = type.GetFields(flags);
-        var config = CreateConfig(fields, customEntityAttr!.IDs[0]);
-        var metadata = new EntityScriptMetadata(type.Name, config);
+
+        // config reflect from static method
+        var configMethodInfo = type.GetMethods(flags).Where(m => m.ReturnType == typeof(LoennEntityConfig)).FirstOrDefault();
+        var config = configMethodInfo != null ? (LoennEntityConfig)configMethodInfo.Invoke(null, null)! : new LoennEntityConfig();
+        var metadata = new EntityScriptMetadata(customEntityAttr!.IDs[0], type.Name, config);
 
         foreach (var field in fields.Where(f => f.IsDefined(typeof(PlacementsElementAttribute)))) 
         {
@@ -158,13 +165,7 @@ public class EntityScriptMetadata
 
     private static LoennEntityConfig CreateConfig(IEnumerable<FieldInfo> fields, string customEntityName)
     {
-        var configField = fields.FirstOrDefault(f => f.FieldType == typeof(LoennEntityConfig));
-        if (configField == null)
-            return new LoennEntityConfig { __CustomEntityName = customEntityName };
-
-        var config = (LoennEntityConfig)configField.GetValue(null)!;
-        config.__CustomEntityName = customEntityName;
-        return config;
+        return new();
     }
 
     private static ElementType GetElementType(Type type) => type switch

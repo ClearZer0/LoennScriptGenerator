@@ -8,20 +8,14 @@ namespace Celeste.Mod.LoennScriptGenerator.LuaModels;
 
 public class LuaScript
 {
-    protected readonly List<LuaElement> elements = new();
+    protected readonly LuaFragment elements = new();    
 
     public void AddNewLine() => elements.Add(LuaNewLine.Instance);
     public void Add(LuaElement element) => elements.Add(element);
-    public void Add(IEnumerable<LuaElement> elements) => this.elements.AddRange(elements);
-    public void Add(params LuaElement[] elements) => this.elements.AddRange(elements);
+    public void Add(IEnumerable<LuaElement> elements) => this.elements.AddLines(elements);
+    public void Add(params LuaElement[] elements) => this.elements.Add(elements);
 
-    public virtual string ToLua()
-    {
-        StringBuilder sb = new StringBuilder();
-        foreach (LuaElement element in elements)
-            sb.Append(element.ToLua());
-        return sb.ToString();
-    }
+    public virtual string ToLua() => elements.ToLua();
     public override string ToString() => ToLua();
 }
 
@@ -52,8 +46,7 @@ public class LuaModule : LuaScript
             sb.AppendLine();
 
         // module body
-        foreach (LuaElement element in elements)
-            sb.Append(element.ToLua());
+        sb.Append(elements.ToLua());
         sb.AppendLine();
 
         // return module

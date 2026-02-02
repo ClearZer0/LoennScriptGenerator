@@ -1,5 +1,5 @@
-﻿using Celeste.Mod.LoennScriptGenerator.LoennScripts;
-using Celeste.Mod.LoennScriptGenerator.LuaModels;
+﻿using Celeste.Mod.LoennScriptGenerator.LuaModels;
+using Celeste.Mod.LoennScriptGenerator.Metadatas;
 using System;
 using System.Collections.Generic;
 using System.Linq;

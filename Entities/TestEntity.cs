@@ -26,6 +26,23 @@ public class TestEntity : Entity
         ThirdOption2
     }
 
+    #region Loenn
+    public static LoennEntityConfig Config()
+    {
+        var config = new LoennEntityConfig()
+        {
+            Depth = 8,
+            Texture = "129685a7s",
+            NodeLimit = (0, 10),
+            NodeVisibility = LoennEntityConfig.NodeVisibilityEnum.Always
+        };
+
+        var sf = config.SpriteFunction;
+        sf.How();
+
+        return config;
+    }
+
     [FieldOrder(0)]
     [MinimumValue(0)]
     [PlacementsElement]
@@ -72,6 +89,7 @@ public class TestEntity : Entity
         new(){ 1,2,3 },
         new(){ 4,5,6,7} 
     };
+    #endregion
 
     public TestEntity(EntityData data, Vector2 offset)
         : base(data.Position + offset)

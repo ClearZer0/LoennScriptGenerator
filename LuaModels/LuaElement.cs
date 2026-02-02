@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,24 @@ public abstract class LuaElement
     public abstract string ToLua(int indentLevel = 0);
     public override string ToString() => ToLua();
     protected string GetIndent(int indentLevel) => new string(' ', indentLevel * 4);
+}
+
+public class LuaFragment : LuaElement
+{
+    private List<LuaElement> lines = new();
+    public int Count => lines.Count;
+
+    public void AddLine(LuaElement line) => lines.Add(line);
+    public void AddLines(IEnumerable<LuaElement> lines) => this.lines.AddRange(lines);
+    public void AddLines(params LuaElement[] lines) => this.lines.AddRange(lines);
+
+    public override string ToLua(int indentLevel = 0)
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var line in lines)
+            sb.Append(line.ToLua());
+        return sb.ToString();
+    }
 }
 
 public class LuaComment : LuaElement

@@ -1,12 +1,12 @@
-﻿using Celeste.Mod.LoennScriptGenerator.LoennScripts;
-using Celeste.Mod.LoennScriptGenerator.LuaModels;
+﻿using Celeste.Mod.LoennScriptGenerator.LuaModels;
+using Celeste.Mod.LoennScriptGenerator.Metadatas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YamlDotNet.Core.Tokens;
-using static Celeste.Mod.LoennScriptGenerator.LoennScripts.ElementMetadata;
+using static Celeste.Mod.LoennScriptGenerator.Metadatas.ElementMetadata;
 
 namespace Celeste.Mod.LoennScriptGenerator.LoennModels;
 

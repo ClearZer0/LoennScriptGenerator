@@ -1,5 +1,6 @@
 ﻿using Celeste.Mod.LoennScriptGenerator.LoennModels;
 using Celeste.Mod.LoennScriptGenerator.LuaModels;
+using Celeste.Mod.LoennScriptGenerator.Metadatas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ public class EntityScript : LoennScript
         GenerateOptions(metadata);
 
         // <moduleName>.Name = <[CustomEntity].Name>
-        var customEntityName = new LuaAssignment(LuaComposer.SimplePrefix(ModuleName, "name"), metadata.Config.__CustomEntityName);
+        var customEntityName = new LuaAssignment(LuaComposer.SimplePrefix(ModuleName, "name"), metadata.CustomEntityName);
         customEntityName.IsLocal = false;
         Add(customEntityName);
 
@@ -81,7 +82,7 @@ public class EntityScript : LoennScript
             Directory.CreateDirectory(directory);
 
         var localizations = new List<string>();
-        var customEntityName = metadata.Config.__CustomEntityName;
+        var customEntityName = metadata.CustomEntityName;
         var entityClassName = LoennScriptGeneratorUtils.SplitCamelCase(metadata.ClassName);
         var sectionHeader = $"# {LoennScriptGeneratorUtils.SplitCamelCase(entityClassName)}";
 
