@@ -20,9 +20,10 @@ public class LuaFragment : LuaElement
     private List<LuaElement> lines = new();
     public int Count => lines.Count;
 
-    public void AddLine(LuaElement line) => lines.Add(line);
-    public void AddLines(IEnumerable<LuaElement> lines) => this.lines.AddRange(lines);
-    public void AddLines(params LuaElement[] lines) => this.lines.AddRange(lines);
+    public void AddNewLine() => Add(LuaNewLine.Instance);
+    public void Add(LuaElement line) => lines.Add(line);
+    public void Add(IEnumerable<LuaElement> lines) => this.lines.AddRange(lines);
+    public void Add(params LuaElement[] lines) => this.lines.AddRange(lines);
 
     public override string ToLua(int indentLevel = 0)
     {

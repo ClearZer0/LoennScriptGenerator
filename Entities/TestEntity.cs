@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Celeste.Mod.LoennScriptGenerator.Entities;
 
+
 [CustomEntity("LoennScriptGenerator/Test")]
 public class TestEntity : Entity
 {
@@ -32,9 +33,11 @@ public class TestEntity : Entity
         var config = new LoennEntityConfig()
         {
             Depth = 8,
-            Texture = "129685a7s",
-            NodeLimit = (0, 10),
-            NodeVisibility = LoennEntityConfig.NodeVisibilityEnum.Always
+            Scale = (-1, 1),
+            NodeLimits = (0, 10),
+            NodeVisibility = LoennEntityConfig.NodeVisibilityEnum.Always,
+            FillColor = Color.LightBlue,
+            BorderColor = Color.LightBlue * 0.5f
         };
 
         var sf = config.SpriteFunction;
@@ -42,6 +45,11 @@ public class TestEntity : Entity
 
         return config;
     }
+
+    [PlacementsElement]
+    public static int _Width = 16;
+    [PlacementsElement]
+    public static int _Height = 16;
 
     [FieldOrder(0)]
     [MinimumValue(0)]

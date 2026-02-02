@@ -24,17 +24,19 @@ public class LoennEntityConfig
     }
 
     public int? Depth;
+    public (bool horizontal, bool vertical) CanResize;
+
     public string? Texture;
     public (float x, float y)? Justification;
     public (int x, int y)? Scale;
     public (int x, int y)? Offset;
     public float? Rotation;
 
-    public Color? Color;
+    public Color? _Color;
     public Color? FillColor;
     public Color? BorderColor;
 
-    public (int min, int max)? NodeLimit;
+    public (int min, int max)? NodeLimits;
     public NodeVisibilityEnum? NodeVisibility;
     public NodeLineRenderTypeEnum? NodeLineRenderType;
 

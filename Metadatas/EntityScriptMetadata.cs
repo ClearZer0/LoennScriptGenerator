@@ -97,7 +97,7 @@ public class EntityScriptMetadata
     private static ElementMetadata CreateElementMetadata(FieldInfo field, IEnumerable<Attribute> attributes)
     {
         var elementType = GetElementType(field.FieldType);
-        var rootMetadata = new ElementMetadata(LoennScriptGeneratorUtils.LowerCamelCase(field.Name), elementType);
+        var rootMetadata = new ElementMetadata(LoennScriptGeneratorUtils.LowerCamelCase(field.Name.TrimStart('_')), elementType);
         rootMetadata.DefaultValue = field.GetValue(null);
 
         SetFieldInfomation(rootMetadata, field.FieldType);
@@ -161,11 +161,6 @@ public class EntityScriptMetadata
                 }
             }
         }
-    }
-
-    private static LoennEntityConfig CreateConfig(IEnumerable<FieldInfo> fields, string customEntityName)
-    {
-        return new();
     }
 
     private static ElementType GetElementType(Type type) => type switch

@@ -74,6 +74,8 @@ public class LuaArray : LuaValue
     public bool IsEmpty => values.Count == 0;
     public bool Flatten = true;
 
+    public LuaArray(params LuaValue[] values) => Add(values);
+
     public void Add(LuaValue value) => values.Add(value);
     public void Add(IEnumerable<LuaValue> values) => this.values.AddRange(values);
     public void Add(params LuaValue[] values) => this.values.AddRange(values);

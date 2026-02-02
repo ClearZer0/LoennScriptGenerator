@@ -10,9 +10,9 @@ public class LuaScript
 {
     protected readonly LuaFragment elements = new();    
 
-    public void AddNewLine() => elements.Add(LuaNewLine.Instance);
+    public void AddNewLine() => elements.AddNewLine();
     public void Add(LuaElement element) => elements.Add(element);
-    public void Add(IEnumerable<LuaElement> elements) => this.elements.AddLines(elements);
+    public void Add(IEnumerable<LuaElement> elements) => this.elements.Add(elements);
     public void Add(params LuaElement[] elements) => this.elements.Add(elements);
 
     public virtual string ToLua() => elements.ToLua();
