@@ -35,7 +35,7 @@ public static class SpriteFunction
         var result = FakeExecute(metadata.Config.SpriteFunction);
         var spriteMetadata = result.metadata;
         var rawExpression = result.raw;
-        if (rawExpression == null)
+        if (spriteMetadata == null)
             return null;
 
         // function <module.Name>.sprite(room, entity)
