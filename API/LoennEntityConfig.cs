@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.LoennScriptGenerator.Metadatas;
+﻿using Celeste.Mod.LoennScriptGenerator.LoennModels;
+using Celeste.Mod.LoennScriptGenerator.Metadatas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,6 @@ public class LoennEntityConfig
     public NodeVisibilityEnum? NodeVisibility;
     public NodeLineRenderTypeEnum? NodeLineRenderType;
 
-    private SpriteFunctionMetadata? spriteFunction;
-    public SpriteFunctionMetadata SpriteFunction => spriteFunction ?? (spriteFunction = new());
+    // (room, entity, spriteFunc)
+    public Action<FakeLuaTable, FakeLuaTable, SpriteFunctionMetadata>? SpriteFunction;
 }

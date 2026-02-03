@@ -16,7 +16,7 @@ public sealed class LoennScriptGeneratorModule : EverestModule
         LoennScriptGeneratorAPI.Load(Metadata);
         var script = LoennScriptGeneratorAPI.GenerateFor<TestEntity>();
 
-        Logger.Info("LoennScriptGenerator", $"\n{script}");
+        // Logger.Info("LoennScriptGenerator", $"\n{script}");
         script.Export(LoennScripts.ExportMode.SkipIfExists);
     }
 

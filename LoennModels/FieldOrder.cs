@@ -19,7 +19,12 @@ public static class FieldOrder
         fieldOrder.Flatten = false;
 
         // display x y width height first
-        fieldOrder.Add(new LuaComposer(", ", "x", "y", "width", "height"));
+        var defaultDisplay = new LuaComposer(", ", "x", "y");
+        if (metadata.Elements.Any(e => e.Name == "width"))
+            defaultDisplay.Add("width");
+        if (metadata.Elements.Any(e => e.Name == "height"))
+            defaultDisplay.Add("height");
+        fieldOrder.Add(defaultDisplay);
 
         var orders = metadata.Elements.Where(e => e.FieldOrder != null).OrderBy(e => e.FieldOrder);
         foreach (var order in orders)

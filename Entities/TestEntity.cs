@@ -1,8 +1,11 @@
 ﻿using Celeste.Mod.Entities;
 using Celeste.Mod.LoennScriptGenerator.API;
+using Celeste.Mod.LoennScriptGenerator.LuaModels;
+using Celeste.Mod.LoennScriptGenerator.Metadatas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,7 +44,25 @@ public class TestEntity : Entity
         };
 
         var sf = config.SpriteFunction;
-        sf.How();
+
+        // Func<???, EntityPlacement, SpriteFunction, SpriteFunction?
+/*        config.SpriteFunction = (room, entity, spriteFunc) =>
+        {
+            ...
+
+            // If(Expression, Func<SpriteFunction, SpriteFunction>)
+            // expression = LuaComposer.SimpleExpression
+            function.If(expression, spriteFunc =>
+            {
+                sprite.XXX;
+
+                ...
+
+                return spriteFunc;
+            })
+
+            return spriteFunc;
+        };*/
 
         return config;
     }
@@ -108,6 +129,25 @@ public class TestEntity : Entity
         Logger.Info("", data.Enum<TestEnum>("myEnum0").ToString());
         Logger.Info("", data.Attr("myEnum1"));
         Logger.Info("", data.Enum<TestEnum>("myEnum1").ToString());
+    }
+
+    public void Test(Func<LuaTable, LuaTable, SpriteFunctionMetadata, SpriteFunctionMetadata> value, [CallerArgumentExpression("value")] string expression = "")
+    {
+        Logger.Info("Test", "\n" + expression);
+    }
+
+    public override void Added(Scene scene)
+    {
+        base.Added(scene);
+/*        Test((room, entity, spriteFunc) =>
+        {
+            int i = 86;
+
+            if (2 < 5)
+                spriteFunc.AddTexture("ausdgugu");
+
+            return spriteFunc;
+        });*/
     }
 
     public override void Render()
