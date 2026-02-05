@@ -43,7 +43,7 @@ public class LuaBlock : LuaElement
             <bodyLineN>
         <footer>
         */
-        string outerIndent = GetIndent(indentLevel);
+        string outerIndent = this is LuaBlock ? string.Empty : GetIndent(indentLevel);
         string innerIndent = GetIndent(indentLevel + 1);
 
         if (Body.Count == 0)
@@ -112,15 +112,16 @@ public class LuaIf : LuaBlock
     public override string ToLua(int indentLevel = 0)
     {
         StringBuilder sb = new StringBuilder();
+        var headerIndent = GetIndent(indentLevel);
 
         // if
         sb.Append(base.ToLua(indentLevel));
         // elseifs
         foreach (var elseif in ElseIfBlocks)
-            sb.Append(elseif.ToLua(indentLevel));
+            sb.Append($"{headerIndent}{elseif.ToLua(indentLevel)}");
         // else
         if (ElseBlock != null)
-            sb.Append(ElseBlock.ToLua(indentLevel));
+            sb.Append($"{headerIndent}{ElseBlock.ToLua(indentLevel)}");
 
         // end
         string outerIndent = GetIndent(indentLevel);

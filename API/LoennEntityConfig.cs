@@ -3,6 +3,7 @@ using Celeste.Mod.LoennScriptGenerator.Metadatas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,5 +43,7 @@ public class LoennEntityConfig
     public NodeLineRenderTypeEnum? NodeLineRenderType;
 
     // (room, entity, spriteFunc)
-    public Action<FakeLuaTable, FakeLuaTable, SpriteFunctionMetadata>? SpriteFunction;
+    public string __SpriteFuncExpression = string.Empty;
+    public void SetSpriteFunction(Action<FakeLuaTable, FakeLuaTable, SpriteFunctionMetadata> spriteFunc, [CallerArgumentExpression(nameof(spriteFunc))] string _expression = "")
+        => __SpriteFuncExpression = _expression;
 }

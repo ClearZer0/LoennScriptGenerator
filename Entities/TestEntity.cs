@@ -43,26 +43,30 @@ public class TestEntity : Entity
             BorderColor = Color.LightBlue * 0.5f
         };
 
-        var sf = config.SpriteFunction;
-
         // Func<???, EntityPlacement, SpriteFunction, SpriteFunction?
-/*        config.SpriteFunction = (room, entity, spriteFunc) =>
+        config.SetSpriteFunction((room, entity, spriteFunc) =>
         {
-            ...
-
-            // If(Expression, Func<SpriteFunction, SpriteFunction>)
-            // expression = LuaComposer.SimpleExpression
-            function.If(expression, spriteFunc =>
+            int a = 0;
+            if (a == 0)
             {
-                sprite.XXX;
+                a = a + 1;
+                a = 0;
+                if (a != 0)
+                {
+                    a = -1;
+                }
+            }
+            else if (a == 1)
+            {
+                a = entity["x"] + 16;
+            }
+            else
+            {
+                a = entity["xy"];
+            }
 
-                ...
-
-                return spriteFunc;
-            })
-
-            return spriteFunc;
-        };*/
+            a = a + 1;
+        });
 
         return config;
     }

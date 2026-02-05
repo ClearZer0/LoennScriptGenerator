@@ -42,6 +42,11 @@ public class EntityScript : LoennScript
 
         // fieldOrder
         Add(FieldOrder.Create(metadata));
+        AddNewLine();
+
+        var spriteFunc = SpriteFunction.Create(metadata);
+        if (spriteFunc != null)
+            Add(spriteFunc);
     }
 
     public override void Export(ExportMode mode)

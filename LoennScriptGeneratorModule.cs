@@ -14,10 +14,10 @@ public sealed class LoennScriptGeneratorModule : EverestModule
         Instance = this;
 
         LoennScriptGeneratorAPI.Load(Metadata);
-        var script = LoennScriptGeneratorAPI.GenerateFor<TestEntity>();
+        //var script = LoennScriptGeneratorAPI.GenerateFor<TestEntity>();
 
         // Logger.Info("LoennScriptGenerator", $"\n{script}");
-        script.Export(LoennScripts.ExportMode.SkipIfExists);
+        //script.Export(LoennScripts.ExportMode.SkipIfExists);
     }
 
     public override void Unload()
